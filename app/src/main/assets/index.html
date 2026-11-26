@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HyperDebloat</title>
+<style>
+:root{--bg:#09090b;--surf:#111114;--brd:#27272a;--txt:#e4e4e7;--mut:#71717a;--ok:#16a34a;--err:#dc2626;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;}
+body{background:var(--bg);color:var(--txt);padding:12px;font-size:14px;}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--brd);padding-bottom:10px;margin-bottom:10px;}
+.title{font-family:monospace;font-weight:700;font-size:16px;letter-spacing:1px;}
+.st{font-family:monospace;font-size:11px;padding:4px 8px;border:1px solid var(--brd);background:var(--surf);}
+.st.on{border-color:var(--ok);color:#4ade80;} .st.off{border-color:var(--err);color:#f87171;}
+.bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+input{flex:1;min-width:110px;background:var(--surf);border:1px solid var(--brd);color:var(--txt);padding:8px;font-family:monospace;font-size:12px;}
+Button,button{background:var(--surf);border:1px solid var(--brd);color:var(--txt);padding:8px 10px;font-size:12px;}
+.btn-w{background:#fafafa;color:#09090b;font-weight:600;border-color:#fafafa;}
+.btn-r{background:#450a0a;border-color:#991b1b;color:#fca5a5;}
+.tabs{display:flex;border-bottom:1px solid var(--brd);margin-bottom:10px;}
+.tab{flex:1;background:transparent;border:none;color:var(--mut);padding:8px;border-bottom:2px solid transparent;}
+.tab.act{color:var(--txt);border-bottom-color:#fafafa;}
+.pane{display:none;} .pane.act{display:block;}
+.list{border:1px solid var(--brd);background:var(--surf);max-height:280px;overflow-y:auto;}
+.item{display:flex;gap:10px;padding:10px;border-bottom:1px solid var(--brd);align-items:center;}
+.p-name{font-family:monospace;font-size:12px;display:block;}
+.p-desc{font-size:11px;color:var(--mut);}
+.log{margin-top:12px;border:1px solid var(--brd);background:#050507;padding:8px;font-family:monospace;font-size:11px;color:#a1a1aa;height:120px;overflow-y:auto;white-space:pre-wrap;}
+.act-row{display:flex;justify-content:space-between;margin-bottom:8px;gap:6px;}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="title">HYPERDEBLOAT MOBILE</span>
+  <span id="st" class="st off">ADB: Ğ¾Ğ¶Ğ¸Ğ´Ğ°Ğ½Ğ¸Ğµ</span>
+</div>
+<div class="bar">
+  <input id="ip" placeholder="IP:PORT">
+  <input id="code" placeholder="ĞšĞ¾Ğ´ (6 Ñ†Ğ¸Ñ„Ñ€)" style="max-width:105px;">
+  <button onclick="doPair()">Pair</button>
+  <button onclick="doConn()">Connect</button>
+  <button onclick="doCheck()">ĞĞ±Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ</button>
+  <button onclick="doCache()">ĞšÑÑˆ</button>
+</div>
+<div class="tabs">
+  <button class="tab act" onclick="sw('ads',this)">Ğ ĞµĞºĞ»Ğ°Ğ¼Ğ°</button>
+  <button class="tab" onclick="sw('bloat',this)">ĞœÑƒÑĞ¾Ñ€</button>
+  <button class="tab" onclick="sw('bak',this)">ĞÑ‚ĞºĞ°Ñ‚</button>
+</div>
+<div id="p-ads" class="pane act">
+  <div class="act-row">
+    <button onclick="sel('c-ads',true)">Ğ’ÑĞµ</button>
+    <button onclick="sel('c-ads',false)">Ğ¡Ğ½ÑÑ‚ÑŒ</button>
+    <button class="btn-w" onclick="runClean('c-ads')">ĞÑ‚ĞºĞ»ÑÑ‡Ğ¸Ñ‚ÑŒ Ğ²Ñ‹Ğ±Ñ€Ğ°Ğ½Ğ½Ğ¾Ğµ</button>
+  </div>
+  <div id="l-ads" class="list"></div>
+</div>
+<div id="p-bloat" class="pane">
+  <div class="act-row">
+    <button onclick="sel('c-bloat',true)">Ğ’ÑĞµ</button>
+    <button onclick="sel('c-bloat',false)">Ğ¡Ğ½ÑÑ‚ÑŒ</button>
+    <button class="btn-r" onclick="runClean('c-bloat')">Ğ£Ğ´Ğ°Ğ»Ğ¸Ñ‚ÑŒ Ğ²Ñ‹Ğ±Ñ€Ğ°Ğ½Ğ½Ğ¾Ğµ</button>
+  </div>
+  <div id="l-bloat" class="list"></div>
+</div>
+<div id="p-bak" class="pane">
+  <div id="l-bak" class="list"></div>
+</div>
+<pre id="log" class="log">Ğ“Ğ¾Ñ‚Ğ¾Ğ². Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ IP:PORT Ğ¸ ĞºĞ¾Ğ´ Ğ´Ğ»Ñ Wi-Fi Ğ¾Ñ‚Ğ»Ğ°Ğ´ĞºĞ¸.</pre>
+<script>
+const ADS = {
+  "com.miui.msa.global":"[Xiaomi] Ğ ĞµĞºĞ»Ğ°Ğ¼Ğ½Ñ‹Ğ¹ Ğ´Ğ²Ğ¸Ğ¶Ğ¾Ğº MSA",
+  "com.miui.analytics":"[Xiaomi] MIUI Analytics",
+  "com.xiaomi.joyose":"[Xiaomi] Joyose Ğ°Ğ½Ğ°Ğ»Ğ¸Ñ‚Ğ¸ĞºĞ°",
+  "com.miui.daemon":"[Xiaomi] MIUI Daemon",
+  "com.samsung.android.app.omcagent":"[Samsung] Ğ ĞµĞºĞ¾Ğ¼ĞµĞ½Ğ´Ğ°Ñ†Ğ¸Ğ¸ Ğ¿Ñ€Ğ¸Ğ»Ğ¾Ğ¶ĞµĞ½Ğ¸Ğ¹",
+  "com.samsung.android.rubin.app":"[Samsung] Customization Service",
+  "com.samsung.android.dqagent":"[Samsung] Device Quality Agent",
+  "com.heytap.mcs":"[Realme/OPPOi Ğ¡Ğ¸ÑÑ‚ĞµĞ¼Ğ½Ğ°Ñ Ñ€ĞµĞºĞ»Ğ°Ğ¼Ğ°",
+  "com.nearme.statistics.rom":"[Realme/OPPOi Ğ¡Ğ±Ğ¾Ñ€ ÑÑ‚Ğ°Ñ‚Ğ¸ÑÑ‚Ğ¸ĞºĞ¸",
+  "com.huawei.bd":"[Huawei/Honor] ĞĞ½Ğ°Ğ»Ğ¸Ñ‚Ğ¸ĞºĞ°",
+  "com.facebook.system":"[Meta] Facebook Installer",
+  "com.facebook.appmanager":"[Meta] Facebook Manager",
+  "com.facebook.services":"[Meta] Facebook Services"
+};
+const BLOAT = {
+  "com.mi.globalbrowser":"[Xiaomi] Mi Ğ‘Ñ€Ğ°ÑƒĞ·ĞµÑ€",
+  "com.miui.videoplayer":"[Xiaomi] Mi Ğ’Ğ¸Ğ´ĞµĞ¾",
+  "com.miui.player":"[Xiaomi] Mi ĞœÑƒĞ·Ñ‹ĞºĞ°",
+  "com.xiaomi.mipicks":"[Xiaomi] GetApps",
+  "com.samsung.android.bixby.agent":"[Samsung] Bixby",
+  "com.samsung.android.app.spage":"[Samsung] Samsung Free",
+  "com.samsung.android.game.gamehome":"[Samsung] Gaming Hub",
+  "com.heytap.browser":"[Realme/OPPO] Ğ‘Ñ€Ğ°ÑƒĞ·ĞµÑ€",
+  "com.heytap.market":"[Realme/OPPO] App Market",
+  "com.huawei.browser":"[Huawei/Honor] Ğ‘Ñ€Ğ°ÑƒĞ·ĞµÑ€",
+  "com.google.android.apps.tachyon":"[Google] Google Meet",
+  "com.google.android.videos":"[Google] Google TV",
+  "com.google.android.apps.youtube.music":"[Google] YouTube Music"
+};
+const SAFE = new Set(["android","com.android.systemui","com.android.settings","com.miui.home","com.miui.securitycenter","com.sec.android.app.launcher","com.huawei.android.launcher"]);
+let lastV = "";
+
+function lg(m){const e=document.getElementById('log');e.textContent+='\n'+m;e.scrollTop=e.scrollHeight;}
+function sw(id,b){document.querySelectorAll('.pane').forEach(x=>x.classList.remove('act'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));document.getElementById('p-'+id).classList.add('act');b.classList.add('act');if(id==='bak')renderBak();}
+function sel(c,s){document.querySelectorAll('.'+c).forEach(x=>x.checked=s);}
+
+function renderLists(){
+  document.getElementById('l-ads').innerHTML = Object.entries(ADS).map(([k,v])=>`<label class="item"><input type="checkbox" class="chk c-ads" value="${k}" data-d="${v}"><div><span class="p-name">${k}</span><span class="p-desc">${v}</span></div></label>`).join('');
+  document.getElementById('l-bloat').innerHTML = Object.entries(BLOAT).map(([k,v])=>`<label class="item"><input type="checkbox" class="chk c-bloat" value="${k}" data-d="${v}"><div><span class="p-name">${k}</span><span class="p-desc">${v}</span></div></label>`).join('');
+}
+
+function autoSel(v){
+  const map={xiaomi:['[Xiaomi]','[Meta]'],samsung:['[Samsung]','[Meta]'],bbk:['[Realme/OPPOi','[Meta]'],huawei:['[Huawei/Honor]','[Meta]'],aosp:['[Meta]','[Google]']};
+  const tags=map[v]||[]; let n=0;
+  document.querySelectorAll('.chk').forEach(c=>{const ok=tags.some(t=>c.dataset.d.includes(t));c.checked=ok;if(ok)n++;});
+  lg('ĞĞ²Ñ‚Ğ¾Ğ²Ñ‹Ğ±Ğ¾Ñ€ ['v.toUpperCase()+']: '+n+' ÑˆÑ‚.');
+}
+
+function doPair(){
+  const ip=document.getElementById('iqÉÊK˜[YKÙYØİ[Y[™Ù][[Y[RY
+ÛÙX
+K˜[YNÂˆYŠZ\XÙ
+H™]\›ˆÊ	ô$´,´-t-4.4`´-HT”Ô•4.4.´/´-	ÊNÂˆÛÛœİR”ÓÓ‹œ\œÙJ[™›ÚYQ‹œZ\Š\Ù
+JNÈÊ‹›Y\ÜØYÙJNÂŸB™[˜İ[ÛˆĞÛÛ›Š
+^ÂˆÛÛœİ\YØİ[Y[™Ù][[Y[RY
+	Ú\rr’çfÇVS°¢–b‚—’&WGW&âÆr‚}	--]M-R•¥õ%Br“°¢6öç7B#Ô¥4ôâç'6R„æG&ö–DD"æ6öææV7B†—’“²Ær‡"–ÖW76vR“²Fô6†V6²‚“°§Ğ¦gVæ7F–öâFô6†V6²‚—°¢6öç7B#Ô¥4ôâç'6R„æG&ö–DD"æ6†V6µ7FGW2‚’“°¢6öç7B7CÖFö7VÖVçBævWDVÆVÖVçD'”–B‚wİ	ÊNÂˆYŠ‹˜ÛÛ›™XİY
+^Üİ˜Û\ÜÓ˜[YOIÜİÛ‰ÎÜİ^ÛÛ[IĞQˆ	ÊÜ‹™]šXÙNÚYŠ‹™[™ÜˆOO[\İŠ^Û\İ\‹™[™ÜØ]]ÔÙ[
+‹™[™ÜŠNß_Bˆ[Ù^Üİ˜Û\ÜÓ˜[YOIÜİÙ™‰ÎÜİ^ÛÛ[IĞQˆ	ÊÜ‹›Y\ÜØYÙNÛ\İIÉÎÜÙ[
+	ØËXYÉË˜[ÙJNÜÙ[
+	ØËX›Ø]	Ë˜[ÙJNßBŸB™[˜İ[ÛˆĞØXÚJ
+^ÛÊ[™›ÚYQ‹š[PØXÚJ
+JNßB‚™[˜İ[Ûˆ[ÛX[ŠÛÊ^ÂˆÛÛœİÙÜÏP\œ˜^K™œ›ÛJØİ[Y[œ]Y\TÙ[XİÜ[
+	Ë‰ÊØÛÊÉÎ˜ÚXÚÙY	ÊJK›X\
+O˜[YJNÂˆYŠ\ÙÜË›[™İ
+H™]\›ˆÊ	ô't.4aô-t,ô/ˆ4/t-H4,´bô,t`4,4/t/IÊNÂˆÛÛœİ˜ZÏR”ÓÓ‹œ\œÙJØØ[İÜ˜YÙK™Ù]][J	ÚØ˜ZÉÊ_	Ö×IÊNÂˆÙÜË™›Ü‘XXÚ
+OÂˆYŠĞQ‘Kš\Ê
+JH™]\›ˆÊ	ô%ô$4*t&4(´$4$4't(´&t&´&4(4'ô&4)Îˆ	ÊÜ
+NÂˆÛÛœİİ]P[™›ÚYQ‹[š[œİ[
+
+NÈÊİ]
+NÂˆYŠİ]œİ\ÕÚ]
+	ô(ô-4,4.ô-t/t/‰ÊH	‰ˆX˜ZËš[˜ÛY\Ê
+JH˜ZËœ\Ú
+
+NÂˆJNÂˆØØ[İÜ˜YÙKœÙ]][J	ÚØ˜ZÉË”ÓÓ‹œİš[™ÚYJ˜ZÊJNÂŸB‚™[˜İ[Ûˆ™[™\˜ZÊ
+^ÂˆÛÛœİ˜ZÏR”ÓÓ‹œ\œÙJØØ[İÜ˜YÙK™Ù]][J	ÚØ˜ZÉÊ_	Ö×IÊNÂˆÛÛœİ›ŞYØİ[Y[™Ù][[Y[RY
+	ÛX˜ZÉÊNÂˆYŠX˜ZËœ™[™\™Y	‰ˆX˜ZË›[™İ
+^Ø›Şš[›™\’SIÏ]ˆİ[OHœY[™ÎŒLØÛÛÜˆÍÌMÌMØNÈ´'ô`ô`t`´/Ù]‰ÎÜ™]\›ßBˆ›Şš[›™\’SX˜ZË›X\
+O˜]ˆÛ\ÜÏHš][Hˆİ[OHš\İYKXÛÛ[œÜXÙKX™]ÙY[ÈÜ[ˆÛ\ÜÏHœ[˜[YH‰ÜOÜÜ[]ÛˆÛ˜ÛXÚÏH™Ô™\İ
+	ÉÜIÊH´$´-t`4/t`ô`´cØ]ÛÙ]˜
+Kš›Ú[Š	ÉÊNÂŸB™[˜İ[ÛˆÔ™\İ
+
+^ÂˆÊ[™›ÚYQ‹œ™\İÜ™J
+JNÂˆÛÛœİ˜ZÏR”ÓÓ‹œ\œÙJØØ[İÜ˜YÙK™Ù]][J	ÚØ˜ZÉÊ_	Ö×IÊK™š[\ŠOOO\
+NÂˆØØ[İÜ˜YÙKœÙ]][J	ÚØ˜ZÉË”ÓÓ‹œİš[™ÚYJ˜ZÊJNÈ™[™\˜ZÊ
+NÂŸBœ™[™\“\İÊ
+NÂÜØÜš\‚Ø›ÙO‚Ú[‚
