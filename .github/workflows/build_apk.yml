@@ -22,14 +22,13 @@ jobs:
         with:
           gradle-version: '8.5'
 
-      - name: Download ARM64 ADB Binary
+      - name: Accept Android SDK Licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      - name: Prepare ADB Binary
         run: |
           mkdir -p app/src/main/jniLibs/arm64-v8a
-          curl -L -o adb_arm64.zip https://github.com || true
-          if [ -f adb_arm64.zip ]; then
-            unzip -o adb_arm64.zip -d temp_adb || true
-            find temp_adb -name "adb" -exec cp {} app/src/main/jniLibs/arm64-v8a/libadb.so \;
-          fi
+          cp $ANDROID_HOME/platform-tools/adb app/src/main/jniLibs/arm64-v8a/libadb.so || true
 
       - name: Build Debug APK
         run: gradle assembleDebug
@@ -39,3 +38,4 @@ jobs:
         with:
           name: HyperDebloat-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+
