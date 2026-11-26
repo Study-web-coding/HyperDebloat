@@ -22,13 +22,36 @@ jobs:
         with:
           gradle-version: '8.5'
 
-      - name: Accept Android SDK Licenses
-        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-      - name: Prepare ADB Binary
+      - name: Fix Manifest & ADB
         run: |
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://android.com">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+              <application
+                  android:allowBackup="true"
+                  android:label="HyperDebloat"
+                  android:theme="@style/Theme.AppCompat.NoActionBar"
+                  android:usesCleartextTraffic="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
           mkdir -p app/src/main/jniLibs/arm64-v8a
           cp $ANDROID_HOME/platform-tools/adb app/src/main/jniLibs/arm64-v8a/libadb.so || true
+
+      - name: Accept Android SDK Licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build Debug APK
         run: gradle assembleDebug
@@ -38,4 +61,3 @@ jobs:
         with:
           name: HyperDebloat-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-
