@@ -6,15 +6,15 @@
 <title>HyperDebloat</title>
 <style>
 :root{--bg:#09090b;--surf:#111114;--brd:#27272a;--txt:#e4e4e7;--mut:#71717a;--ok:#16a34a;--err:#dc2626;}
-*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;-webkit-tap-highlight-color:transparent;}
 body{background:var(--bg);color:var(--txt);padding:12px;font-size:14px;}
 .top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--brd);padding-bottom:10px;margin-bottom:10px;}
-.title{font-family:monospace;font-weight:700;font-size:16px;letter-spacing:1px;}
+.title{font-family:monospace;font-weight:700;font-size:15px;}
 .st{font-family:monospace;font-size:11px;padding:4px 8px;border:1px solid var(--brd);background:var(--surf);}
 .st.on{border-color:var(--ok);color:#4ade80;} .st.off{border-color:var(--err);color:#f87171;}
 .bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
 input{flex:1;min-width:110px;background:var(--surf);border:1px solid var(--brd);color:var(--txt);padding:8px;font-family:monospace;font-size:12px;}
-Button,button{background:var(--surf);border:1px solid var(--brd);color:var(--txt);padding:8px 10px;font-size:12px;}
+button{background:var(--surf);border:1px solid var(--brd);color:var(--txt);padding:8px 10px;font-size:12px;}
 .btn-w{background:#fafafa;color:#09090b;font-weight:600;border-color:#fafafa;}
 .btn-r{background:#450a0a;border-color:#991b1b;color:#fca5a5;}
 .tabs{display:flex;border-bottom:1px solid var(--brd);margin-bottom:10px;}
@@ -37,47 +37,47 @@ Button,button{background:var(--surf);border:1px solid var(--brd);color:var(--txt
 <div class="bar">
   <input id="ip" placeholder="IP:PORT">
   <input id="code" placeholder="–ö–æ–¥ (6 —Ü–∏—Ñ—Ä)" style="max-width:105px;">
-  <button onclick="doPair()">Pair</button>
-  <button onclick="doConn()">Connect</button>
-  <button onclick="doCheck()">–û–±–Ω–æ–≤–∏—Ç—å</button>
-  <button onclick="doCache()">–ö—ç—à</button>
+  <button id="b-pair">Pair</button>
+  <button id="b-conn">Connect</button>
+  <button id="b-chk">–û–±–Ω–æ–≤–∏—Ç—å</button>
+  <button id="b-cch">–ö—ç—à</button>
 </div>
 <div class="tabs">
-  <button class="tab act" onclick="sw('ads',this)">–†–µ–∫–ª–∞–º–∞</button>
-  <button class="tab" onclick="sw('bloat',this)">–ú—É—Å–æ—Ä</button>
-  <button class="tab" onclick="sw('bak',this)">–û—Ç–∫–∞—Ç</button>
+  <button class="tab act" data-tab="ads">–†–µ–∫–ª–∞–º–∞</button>
+  <button class="tab" data-tab="bloat">–ú—É—Å–æ—Ä</button>
+  <button class="tab" data-tab="bak">–û—Ç–∫–∞—Ç</button>
 </div>
 <div id="p-ads" class="pane act">
   <div class="act-row">
-    <button onclick="sel('c-ads',true)">–í—Å–µ</button>
-    <button onclick="sel('c-ads',false)">–°–Ω—è—Ç—å</button>
-    <button class="btn-w" onclick="runClean('c-ads')">–û—Ç–∫–ª—é—á–∏—Ç—å –≤—ã–±—Ä–∞–Ω–Ω–æ–µ</button>
+    <button id="s-ads-1">–í—Å–µ</button>
+    <button id="s-ads-0">–°–Ω—è—Ç—å</button>
+    <button class="btn-w" id="r-ads">–û—Ç–∫–ª—é—á–∏—Ç—å –≤—ã–±—Ä–∞–Ω–Ω–æ–µ</button>
   </div>
   <div id="l-ads" class="list"></div>
 </div>
 <div id="p-bloat" class="pane">
   <div class="act-row">
-    <button onclick="sel('c-bloat',true)">–í—Å–µ</button>
-    <button onclick="sel('c-bloat',false)">–°–Ω—è—Ç—å</button>
-    <button class="btn-r" onclick="runClean('c-bloat')">–£–¥–∞–ª–∏—Ç—å –≤—ã–±—Ä–∞–Ω–Ω–æ–µ</button>
+    <button id="s-blt-1">–í—Å–µ</button>
+    <button id="s-blt-0">–°–Ω—è—Ç—å</button>
+    <button class="btn-r" id="r-blt">–£–¥–∞–ª–∏—Ç—å –≤—ã–±—Ä–∞–Ω–Ω–æ–µ</button>
   </div>
   <div id="l-bloat" class="list"></div>
 </div>
 <div id="p-bak" class="pane">
   <div id="l-bak" class="list"></div>
 </div>
-<pre id="log" class="log">–ì–æ—Ç–æ–≤. –í–≤–µ–¥–∏—Ç–µ IP:PORT –∏ –∫–æ–¥ –¥–ª—è Wi-Fi –æ—Ç–ª–∞–¥–∫–∏.</pre>
+<pre id="log" class="log">–ì–æ—Ç–æ–≤ –∫ —Ä–∞–±–æ—Ç–µ.</pre>
 <script>
 const ADS = {
   "com.miui.msa.global":"[Xiaomi] –†–µ–∫–ª–∞–º–Ω—ã–π –¥–≤–∏–∂–æ–∫ MSA",
   "com.miui.analytics":"[Xiaomi] MIUI Analytics",
   "com.xiaomi.joyose":"[Xiaomi] Joyose –∞–Ω–∞–ª–∏—Ç–∏–∫–∞",
   "com.miui.daemon":"[Xiaomi] MIUI Daemon",
-  "com.samsung.android.app.omcagent":"[Samsung] –†–µ–∫–æ–º–µ–Ω–¥–∞—Ü–∏–∏ –ø—Ä–∏–ª–æ–∂–µ–Ω–∏–π",
+  "com.samsung.android.app.omcagent":"[Samsung] –†–µ–∫–æ–º–µ–Ω–¥–∞—Ü–∏–∏",
   "com.samsung.android.rubin.app":"[Samsung] Customization Service",
   "com.samsung.android.dqagent":"[Samsung] Device Quality Agent",
-  "com.heytap.mcs":"[Realme/OPPOi –°–∏—Å—Ç–µ–º–Ω–∞—è —Ä–µ–∫–ª–∞–º–∞",
-  "com.nearme.statistics.rom":"[Realme/OPPOi –°–±–æ—Ä —Å—Ç–∞—Ç–∏—Å—Ç–∏–∫–∏",
+  "com.heytap.mcs":"[Realme/OPPO] –°–∏—Å—Ç–µ–º–Ω–∞—è —Ä–µ–∫–ª–∞–º–∞",
+  "com.nearme.statistics.rom":"[Realme/OPPO] –°—Ç–∞—Ç–∏—Å—Ç–∏–∫–∞",
   "com.huawei.bd":"[Huawei/Honor] –ê–Ω–∞–ª–∏—Ç–∏–∫–∞",
   "com.facebook.system":"[Meta] Facebook Installer",
   "com.facebook.appmanager":"[Meta] Facebook Manager",
@@ -102,57 +102,101 @@ const SAFE = new Set(["android","com.android.systemui","com.android.settings","c
 let lastV = "";
 
 function lg(m){const e=document.getElementById('log');e.textContent+='\n'+m;e.scrollTop=e.scrollHeight;}
-function sw(id,b){document.querySelectorAll('.pane').forEach(x=>x.classList.remove('act'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));document.getElementById('p-'+id).classList.add('act');b.classList.add('act');if(id==='bak')renderBak();}
 function sel(c,s){document.querySelectorAll('.'+c).forEach(x=>x.checked=s);}
 
 function renderLists(){
-  document.getElementById('l-ads').innerHTML = Object.entries(ADS).map(([k,v])=>`<label class="item"><input type="checkbox" class="chk c-ads" value="${k}" data-d="${v}"><div><span class="p-name">${k}</span><span class="p-desc">${v}</span></div></label>`).join('');
-  document.getElementById('l-bloat').innerHTML = Object.entries(BLOAT).map(([k,v])=>`<label class="item"><input type="checkbox" class="chk c-bloat" value="${k}" data-d="${v}"><div><span class="p-name">${k}</span><span class="p-desc">${v}</span></div></label>`).join('');
+  document.getElementById('l-ads').innerHTML = Object.entries(ADS).map(([k,v])=>'<label class="item"><input type="checkbox" class="chk c-ads" value="'+k+'" data-d="'+v+'"><div><span class="p-name">'+k+'</span><span class="p-desc">'+v+'</span></div></label>').join('');
+  document.getElementById('l-bloat').innerHTML = Object.entries(BLOAT).map(([k,v])=>'<label class="item"><input type="checkbox" class="chk c-bloat" value="'+k+'" data-d="'+v+'"><div><span class="p-name">'+k+'</span><span class="p-desc">'+v+'</span></div></label>').join('');
 }
 
 function autoSel(v){
-  const map={xiaomi:['[Xiaomi]','[Meta]'],samsung:['[Samsung]','[Meta]'],bbk:['[Realme/OPPOi','[Meta]'],huawei:['[Huawei/Honor]','[Meta]'],aosp:['[Meta]','[Google]']};
+  const map={xiaomi:['[Xiaomi]','[Meta]'],samsung:['[Samsung]','[Meta]'],bbk:['[Realme/OPPO]','[Meta]'],huawei:['[Huawei/Honor]','[Meta]'],aosp:['[Meta]','[Google]']};
   const tags=map[v]||[]; let n=0;
   document.querySelectorAll('.chk').forEach(c=>{const ok=tags.some(t=>c.dataset.d.includes(t));c.checked=ok;if(ok)n++;});
-  lg('–ê–≤—Ç–æ–≤—ã–±–æ—Ä ['v.toUpperCase()+']: '+n+' —à—Ç.');
+  lg('–ê–≤—Ç–æ–≤—ã–±–æ—Ä ['+v.toUpperCase()+']: '+n+' —à—Ç.');
 }
 
-function doPair(){
-  const ip=document.getElementById('iq… Kùò[YKŸYÿ›[Y[ùôŸ][[Y[ùûRY
-€ŸX
-Kùò[YN¬àYäZ\XŸ
-Hô]\õà 	Ù$¥,¥-t-4.4`¥-HTî‘ï4.4.¥/¥-	 N¬à€€ú›èRî””ãú\úŸJ[ôõ⁄YQãúZ\ä\Ÿ
-JN» ãõY\‹ÿYŸJN¬üBôù[ò›[€à–€€õä
-^¬à€€ú›\Yÿ›[Y[ùôŸ][[Y[ùûRY
-	⁄\rríÁf«VS∞¢ñbÇóí&WGW&‚∆rÇ}	--]Mç-Rï•ı%Brì∞¢6ˆÁ7B#‘•4Ù‚Á'6RÑÊG&ˆñDD"Ê6ˆÊÊV7BÜóíì≤∆rá"ñ÷W76vRì≤FÙ6ÜV6≤Çì∞ß–¶gVÊ7Fñˆ‚FÙ6ÜV6≤Çó∞¢6ˆÁ7B#‘•4Ù‚Á'6RÑÊG&ˆñDD"Ê6ÜV6µ7FGW2Çíì∞¢6ˆÁ7B7C÷Fˆ7V÷VÁBÊvWDV∆V÷VÁD'îñBÇw›	 N¬àYäãò€€õôX›Y
-^‹›ò€\‹”ò[YOI‹›€âŒ‹›ù^€€ù[ùI–Qéà	 ‹ãô]öXŸN⁄Yäãùô[ô‹àOO[\›ä^€\›è\ãùô[ô‹éÿ]]‘Ÿ[
-ãùô[ô‹äNﬂ_Bà[Ÿ^‹›ò€\‹”ò[YOI‹›ŸôâŒ‹›ù^€€ù[ùI–Qéà	 ‹ãõY\‹ÿYŸN€\›èI…Œ‹Ÿ[
-	ÿÀXY…Àò[ŸJN‹Ÿ[
-	ÿÀXõÿ]	Àò[ŸJNﬂBüBôù[ò›[€à–ÿX⁄J
-^€ [ôõ⁄YQãùö[PÿX⁄J
-JNﬂBÇôù[ò›[€àù[ê€X[ä€ ^¬à€€ú›Ÿ‹œP\úò^Kôúõ€Jÿ›[Y[ùú]Y\ûTŸ[X›‹ê[
-	Àâ ÿ€ …Œò⁄X⁄ŸY	 JKõX\
-Oûùò[YJN¬àYä\Ÿ‹Àõ[ô›
-Hô]\õà 	Ù't.4aÙ-t,Ù/à4/t-H4,¥bÙ,t`4,4/t/I N¬à€€ú›òZœRî””ãú\úŸJÿÿ[›‹òYŸKôŸ]][J	⁄ÿòZ… _	÷◊I N¬àŸ‹Àôõ‹ëXX⁄
-Oû¬àYä–QëKö\ 
-JHô]\õà 	Ù%Ù$4*t&4(¥$4$4't(¥&t&¥&4(4'Ù&4)Œà	 ‹
-N¬à€€ú››]P[ôõ⁄YQãù[ö[ú›[
-
-N» ›]
-N¬àYä›]ú›\ù’⁄]
-	Ù(Ù-4,4.Ù-t/t/éâ H	âàXòZÀö[ò€Y\ 
-JHòZÀú\⁄
-
-N¬àJN¬àÿÿ[›‹òYŸKúŸ]][J	⁄ÿòZ…Àî””ãú›ö[ô⁄YûJòZ JN¬üBÇôù[ò›[€àô[ô\êòZ 
-^¬à€€ú›òZœRî””ãú\úŸJÿÿ[›‹òYŸKôŸ]][J	⁄ÿòZ… _	÷◊I N¬à€€ú›õﬁYÿ›[Y[ùôŸ][[Y[ùûRY
-	€XòZ… N¬àYäXòZÀúô[ô\ôY	âàXòZÀõ[ô›
-^ÿõﬁö[õô\íSIœ]à›[OHúY[ôŒåLÿ€€‹éàÕÃMÃMÿN»è¥'Ù`Ù`t`¥/èŸ]èâŒ‹ô]\õéﬂBàõﬁö[õô\íSXòZÀõX\
-Oò]à€\‹œHö][Hà›[OHöù\›YûKX€€ù[ùú‹XŸKXô]ŸY[é»èè‹[à€\‹œHú[ò[YHèâ‹O‹‹[èèù]€à€ò€X⁄œHô‘ô\›
-	…‹I Hè¥$¥-t`4/t`Ù`¥cÿù]€èèŸ]èò
-Köõ⁄[ä	… N¬üBôù[ò›[€à‘ô\›
-
-^¬à [ôõ⁄YQãúô\›‹ôJ
-JN¬à€€ú›òZœRî””ãú\úŸJÿÿ[›‹òYŸKôŸ]][J	⁄ÿòZ… _	÷◊I Kôö[\äOûOO\
-N¬àÿÿ[›‹òYŸKúŸ]][J	⁄ÿòZ…Àî””ãú›ö[ô⁄YûJòZ JN»ô[ô\êòZ 
-N¬üBúô[ô\ì\› 
-N¬è‹ÿ‹ö\ÇèÿõŸOÇè⁄[Ç
+function callBridge(fn, ...args){
+  if(typeof AndroidADB === 'undefined'){ lg('–û—à–∏–±–∫–∞: –º–æ—Å—Ç AndroidADB –Ω–µ –Ω–∞–π–¥–µ–Ω'); return null; }
+  return AndroidADB[fn](...args);
+}
+
+document.querySelectorAll('.tab').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('act'));
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('act'));
+    document.getElementById('p-'+b.dataset.tab).classList.add('act');
+    b.classList.add('act');
+    if(b.dataset.tab==='bak') renderBak();
+  });
+});
+
+document.getElementById('s-ads-1').onclick = ()=>sel('c-ads',true);
+document.getElementById('s-ads-0').onclick = ()=>sel('c-ads',false);
+document.getElementById('s-blt-1').onclick = ()=>sel('c-bloat',true);
+document.getElementById('s-blt-0').onclick = ()=>sel('c-bloat',false);
+
+document.getElementById('b-pair').onclick = ()=>{
+  const ip=document.getElementById('ip').value.trim(), cd=document.getElementById('code').value.trim();
+  if(!ip||!cd) return lg('–í–≤–µ–¥–∏—Ç–µ IP:PORT –∏ 6-–∑–Ω–∞—á–Ω—ã–π –∫–æ–¥');
+  lg('–°–æ–ø—Ä—è–∂–µ–Ω–∏–µ —Å '+ip+'...');
+  const raw=callBridge('pair',ip,cd);
+  if(raw){ const r=JSON.parse(raw); lg(r.message); }
+};
+
+document.getElementById('b-conn').onclick = ()=>{
+  const ip=document.getElementById('ip').value.trim();
+  if(!ip) return lg('–í–≤–µ–¥–∏—Ç–µ IP:PORT');
+  lg('–ü–æ–¥–∫–ª—é—á–µ–Ω–∏–µ –∫ '+ip+'...');
+  const raw=callBridge('connect',ip);
+  if(raw){ const r=JSON.parse(raw); lg(r.message); document.getElementById('b-chk').click(); }
+};
+
+document.getElementById('b-chk').onclick = ()=>{
+  const raw=callBridge('checkStatus');
+  if(!raw) return;
+  const r=JSON.parse(raw);
+  const st=document.getElementById('st');
+  if(r.connected){st.className='st on';st.textContent='ADB: '+r.device;if(r.vendor!==lastV){lastV=r.vendor;autoSel(r.vendor);}}
+  else{st.className='st off';st.textContent='ADB: '+r.message;lastV='';sel('c-ads',false);sel('c-bloat',false);}
+};
+
+document.getElementById('b-cch').onclick = ()=>{
+  lg('–û—á–∏—Å—Ç–∫–∞ –∫—ç—à–∞...');
+  const out=callBridge('trimCache');
+  if(out) lg(out);
+};
+
+function runClean(cls){
+  const pkgs=Array.from(document.querySelectorAll('.'+cls+':checked')).map(x=>x.value);
+  if(!pkgs.length) return lg('–ù–∏—á–µ–≥–æ –Ω–µ –≤—ã–±—Ä–∞–Ω–æ');
+  const bak=JSON.parse(localStorage.getItem('hd_bak')||'[]');
+  pkgs.forEach(p=>{
+    if(SAFE.has(p)) return lg('–ó–ê–©–ò–¢–ê –ê–ù–¢–ò-–ö–ò–†–ü–ò–ß: '+p);
+    const out=callBridge('uninstall',p);
+    if(out){ lg(out); if(out.startsWith('Removed:') && !bak.includes(p)) bak.push(p); }
+  });
+  localStorage.setItem('hd_bak',JSON.stringify(bak));
+}
+
+document.getElementById('r-ads').onclick = ()=>runClean('c-ads');
+document.getElementById('r-blt').onclick = ()=>runClean('c-bloat');
+
+function renderBak(){
+  const bak=JSON.parse(localStorage.getItem('hd_bak')||'[]');
+  const box=document.getElementById('l-bak');
+  if(!bak.length){box.innerHTML='<div style="padding:10px;color:#71717a;">–ü—É—Å—Ç–æ</div>';return;}
+  box.innerHTML=bak.map(p=>'<div class="item" style="justify-content:space-between;"><span class="p-name">'+p+'</span><button onclick="doRest(\''+p+'\')">–í–µ—Ä–Ω—É—Ç—å</button></div>').join('');
+}
+
+window.doRest = function(p){
+  const out=callBridge('restore',p);
+  if(out) lg(out);
+  const bak=JSON.parse(localStorage.getItem('hd_bak')||'[]').filter(x=>x!==p);
+  localStorage.setItem('hd_bak',JSON.stringify(bak)); renderBak();
+};
+
+renderLists();
+</script>
+</body>
+</html>
